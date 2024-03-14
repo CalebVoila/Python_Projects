@@ -24,8 +24,8 @@ dash_app.layout = html.Div([
         id='weather-graph',
         figure={
             'data': [
-                {'x': df['city'], 'y': df['temperature'], 'type': 'bar', 'name': 'Temperature'},
-                {'x': df['city'], 'y': df['humidity'], 'type': 'bar', 'name': 'Humidity'}
+                {'x': df['city'], 'y': df['temperature'], 'type': 'pi', 'name': 'Temperature'},
+                {'x': df['city'], 'y': df['humidity'], 'type': 'pi', 'name': 'Humidity'}
             ],
             'layout': {
                 'title': 'Temperature and Humidity by City'
@@ -36,6 +36,8 @@ dash_app.layout = html.Div([
 
 @app.route('/')
 def index():
+
+
     return render_template('index.html')
 
 if __name__ == '__main__':
