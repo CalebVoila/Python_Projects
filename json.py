@@ -16,7 +16,7 @@ def get_weather():
         weather_label.config(text=weather_info)
     else:
         weather_label.config(text=f"Error: Weather data not available for {city.capitalize()}.")
-
+# creating the gui
 root = Tk()
 root.title("Weather Dashboard")
 

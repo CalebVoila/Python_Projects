@@ -1,0 +1,11 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+    <h1>Confirm Delete</h1>
+    <p>Are you sure you want to delete "{{ bill.customer.name }} - Reading: {{ bill.reading }} - Amount: {{ bill.amount }} - Date: {{ bill.date }}"?</p>
+    <form action="{% url 'bill_delete' bill.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm Delete</button>
+    </form>
+    <a href="{% url 'bill_list' %}">Cancel</a>
+{% endblock %}
