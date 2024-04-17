@@ -10,7 +10,8 @@ weather_data = [
     {"city": "New York", "temperature": 20, "humidity": 50, "conditions": "Cloudy"},
     {"city": "Los Angeles", "temperature": 25, "humidity": 60, "conditions": "Sunny"},
     {"city": "Chicago", "temperature": 15, "humidity": 55, "conditions": "Rainy"},
-{"city": "WashingtonDC", "temperature": 25, "humidity": 35, "conditions": "Haze"}
+{"city": "WashingtonDC", "temperature": 25, "humidity": 35, "conditions": "Haze"},
+{"city": "India", "temperature": 36, "humidity": 30, "conditions": "Sunny"}
 ]
 
 # Insert weather data into MongoDB
