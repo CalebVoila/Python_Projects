@@ -1,20 +1,89 @@
-# myapp/views.py
 import datetime
 import pyjokes
-
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect
 import speech_recognition as sr
 import pyttsx3
 import webbrowser
-from .models import Destination
+from django.contrib.auth import authenticate, logout
+from django.contrib.auth import login
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from .models import Destination, Movies, Shows, Kdrama
 from .models import Local_news
+from .models import International_news
+from .models import National_news
+from .models import desi_car
+from .models import anime
+from .models import car_mov
 
 
 def index(request):
     # Query all Destination objects from the database
     dests = Destination.objects.all()
     return render(request, 'index1.html', {'dests': dests})
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+    if request.method == "POST":
+        name1 = request.POST["firstName"]
+        name2 = request.POST["lastName"]
+        username = request.POST["username"]
+        password1 = request.POST["password"]
+        password2 = request.POST["confirmPassword"]
+        email = request.POST['email']
+        if password1 == password2:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists! Please try another one.")
+                return render(request, "register.html")
+            elif User.objects.filter(email=email).exists():
+                messages.error(request, "email already exists! Please try another one.")
+                return render(request, "register.html")
+            else:
+                user = User.objects.create_user(first_name=name1, last_name=name2, username=username,
+                                                password=password1, email=email)
+                user.save()
+                messages.success(request, "Registration Successful! You can now login.")
+                return render(request, "login.html")
+
+        else:
+            messages.error(request, "Password didn't match with Confirmpassword")
+    return render(request, 'register.html')
+
+
+def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+    if request.method == "POST":
+        name1 = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(username=name1, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Login Successfull")
+            return redirect('/')
+        else:
+            messages.error(request, "Enter Correct Credentials!")
+            return redirect('login')
+    return render(request, 'login.html')
+
+
+def user_logout(request):
+    logout(request)
+    return render(request, 'login.html')
+
+
+@login_required
+def about(request):
+    return render(request, 'about.html')
+
+
+
+@login_required
+def contact(request):
+    return render(request, 'contact.html')
 
 
 def voice_assistant(request):
@@ -26,9 +95,10 @@ def voice_assistant(request):
             r.adjust_for_ambient_noise(source)
             audio = r.listen(source)
 
+
         try:
             print("Recognizing...")
-            query = r.recognize_google(audio)
+            query = r.recognize_google(audio).lower()
             print(f"User said: {query}")
             response_text = process_query(query)
             response_data = {'text': response_text}
@@ -39,14 +109,9 @@ def voice_assistant(request):
 
 
 def process_query(query):
-    if 'open YouTube' in query:
+    if 'open youtube' in query:
         webbrowser.open('https:/www.youtube.com/')
         speak("Opening YouTube.")
-    elif 'play' in query:
-        song = query.replace('play', '')
-        url = 'http://localhost:8000/play/'
-        webbrowser.open(url)
-        speak("Playing" + song)
     elif 'time' in query:
         time = datetime.datetime.now().strftime('%I:%M%p')
         speak("The current time is " + time)
@@ -63,15 +128,183 @@ def process_query(query):
     elif 'sports' in query:
         url = 'http://localhost:8000/sports/'
         webbrowser.open(url)
-        speak('opening news')
+        speak('opening sports')
     elif 'entertainment' in query:
         url = 'http://localhost:8000/entertainment/'
         webbrowser.open(url)
-        speak('opening news')
-    elif 'cartoon' in query:
+        speak('opening entertainment')
+    elif ' cartoons' in query:
         url = 'http://localhost:8000/cartoon/'
         webbrowser.open(url)
-        speak('opening news')
+        speak('opening cartoons')
+    elif 'play etv ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/ETV'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play ntv' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/NTV'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'abn Andhra Jyothi' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/ABN'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play tv9 Telugu' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/TV9_telugu'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play tv9 hindi' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/TV9_hindi'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play tv9 kannada' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/TV9_kannada'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play tv5' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/TV5news'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play sun news' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/sunnews'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif ' play tv18 ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/CNBC'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play bahubali ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/baahubali'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play bbc ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/news/play/BBC'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play aravinda' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/aravinda'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play legend ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/legend'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play okkadu ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/okkadu'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play zindagi ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/zindagi'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play iifaa ' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/iifa'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play zee cine ' in query:
+        query.lower()
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/zee'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play ritesh' in query:
+        query.lower()
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/riteish'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play hrithik' in query:
+        query.lower()
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/hrithik'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play siima' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/siima'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play lost' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/lost'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play venom' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/venom'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play american' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/american'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play nun' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/nun'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play mysterious' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/entertainment/play/mysterious'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play chhota bheem' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/bheem'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play oggy' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/oggy'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play bean' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/bean'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play courage' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/cou'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play doraemon' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/dora'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play doraemon Movie' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/doramov'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play nemo' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/nemo'
+        webbrowser.open(url)
+        speak("Playing" + song)
+    elif 'play good' in query:
+        song = query.replace('play', '')
+        url = 'http://localhost:8000/cartoon/play/good'
+        webbrowser.open(url)
+        speak("Playing" + song)
 
     else:
         speak("I'm sorry, I don't understand that command.")
@@ -83,20 +316,229 @@ def speak(text):
     engine.runAndWait()
 
 
-def after_joke(request):
-    abcd = 'WLkkaBMU5EM'
-    return render(request, 'play.html', {'source': abcd})
-
-
+@login_required
 def news(request):
     objects = Local_news.objects.all()
-    return render(request, 'news.html', {'objects': objects})
+    objects1 = National_news.objects.all()
+    objects2 = International_news.objects.all()
+    return render(request, 'news.html', {'objects': objects, 'objects1': objects1, 'objects2': objects2})
+
+
+@login_required
 def sports(request):
     objects = Local_news.objects.all()
-    return render(request, 'news.html', {'objects': objects})
+    return render(request, 'sports.html', {'objects': objects})
+
+
+@login_required
 def entertainment(request):
-    objects = Local_news.objects.all()
-    return render(request, 'news.html', {'objects': objects})
+    objects = Movies.objects.all()
+    objects1 = Shows.objects.all()
+    objects2 = Kdrama.objects.all()
+    return render(request, 'entertainment.html', {'objects': objects, 'objects1': objects1, 'objects2': objects2})
+
+
+@login_required
 def cartoon(request):
-    objects = Local_news.objects.all()
-    return render(request, 'news.html', {'objects': objects})
+    objects = desi_car.objects.all()
+    objects1 = anime.objects.all()
+    objects2 = car_mov.objects.all()
+    return render(request, 'cartoon.html', {'objects': objects, 'objects1': objects1, 'objects2': objects2})
+
+
+@login_required
+def after_ETVTelugu(request):
+    abcd = 'uEAmtfwKuX0'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_NTV(request):
+    abcd = 'L0RktSIM980'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_ABN(request):
+    abcd = 'Q-nSNssz3p0'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_TV9telugu(request):
+    abcd = 'II_m28Bm-iM'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_TV9hindi(request):
+    abcd = 'bxZSoCw6JW0'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_TV9kannada(request):
+    abcd = 'jdJoOhqCipA'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_TV5news(request):
+    abcd = 'MQr6p9TrPyQ'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_sunnews(request):
+    abcd = '9M02G5c6x6w'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_CNBC(request):
+    abcd = '1_Ih0JYmkjI'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_BBC(request):
+    abcd = 'w9uJg68CV4g'
+    return render(request, 'news_respg.html', {'source': abcd})
+
+
+@login_required
+def after_bahubali(request):
+    abcd = 'u3Zcaeei_H8'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_aravinda(request):
+    abcd = 'JPs8EoPHtV8'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_legend(request):
+    abcd = 'Px5nHPQZ-1o'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_jawani(request):
+    abcd = 'qXgUlhSzlXI'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_zindagi(request):
+    abcd = 'lHubgWDweAE'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_iifa(request):
+    abcd = 'czjq5PlyFpw'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_cine(request):
+    abcd = 'n9oyDtfACo8'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_riteish(request):
+    abcd = '-Qb-0uWsGkI'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_hrithik(request):
+    abcd = 'Qmpb2XPPtCg'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_siima(request):
+    abcd = 'byvqAINMJYI'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_lost(request):
+    abcd = 'jqd-OHU7OMw'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_venom(request):
+    abcd = 'nZ6txXT1uSw'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_american(request):
+    abcd = '4XXDw_PbLJE'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_nun(request):
+    abcd = 'Y0IkU7yV-KU'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_myst(request):
+    abcd = 'qG5VkoPXPuA'
+    return render(request, 'entertainment_respg.html', {'source': abcd})
+
+
+@login_required
+def after_bheem(request):
+    abcd = 'eTVYvG44cNM'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_oggy(request):
+    abcd = '9cmae_aFhTs'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_bean(request):
+    abcd = 'GIhq_I6LClo'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_cou(request):
+    abcd = 'H40v3ISrHhQ'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_dora(request):
+    abcd = 'I-Lv9YWXd48'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_doramov(request):
+    abcd = '34Ud1CSDY7M'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_nemo(request):
+    abcd = 'GjiZRzDVBBY'
+    return render(request, 'cartoon_respg.html', {'source': abcd})
+
+
+@login_required
+def after_good(request):
+    abcd = '3KPIgP7PBmg'
+    return render(request, 'cartoon_respg.html', {'source': abcd})

@@ -14,6 +14,19 @@
 <link rel="stylesheet" type="text/css" href="{% static 'plugins/OwlCarousel2-2.2.1/animate.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/main_styles.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'styles/responsive.css' %}">
+		<style>
+	/* Define the style for the destination card */
+.destination.item {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+/* Define the grow effect */
+.destination.item:hover {
+    transform: scale(1.1); /* Scale up the card when hovered */
+}
+		</style>
 </head>
 <body>
 
@@ -66,7 +79,7 @@
 
 	<div class="menu">
 		<div class="flex-row menu_header d-flex align-items-center justify-content-start">
-			<div class="menu_logo"><a href="index.html">AI ASSISTANT</a></div>
+			<div class="menu_logo"><a href="index">AI ASSISTANT</a></div>
 			<div class="ml-auto menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
 			<div class="mic-button">
         <button id="micBtn">Mic</button>
@@ -103,7 +116,7 @@
 
 				<!-- Slide -->
 				<div class="owl-item">
-					<div class="background_image" style="background-image:url({% static 'images/news.png' %})"></div>
+					<div class="background_image" style="background-image:url({% static 'images/news1.png' %})"></div>
 					<div class="home_slider_content_container">
 						<div class="container">
 							<div class="row">
@@ -129,11 +142,11 @@
 
 	<!-- Destinations -->
 
-	<div class="destinations" id="destinations">
+	<div class="destinations" id="destinations1">
 		<div class="container">
 			<div class="row">
 				<div class="text-center col">
-					<div class="section_title"><h2>Our Services</h2></div>
+					<div class="section_title"><h2>Local News</h2></div>
 				</div>
 			</div>
 			<div class="row destinations_row">
@@ -143,11 +156,78 @@
 						<!-- Destination -->
 						{% for obj in objects %}
 						<div class="destination item">
+							<a href="{{obj.link}}">
 							<div class="destination_image">
 								<img src="{{ MEDIA_URL }}{{ obj.image.url }}" alt="Image">
 							</div>
 							<div class="destination_content">
-								<div class="destination_title"><a href="destinations.html">{{obj.name}}</a></div>
+								<div class="destination_title">{{obj.name}}</a></div>
+								<div class="destination_subtitle"><p>{{obj.desc}}</p></div>
+							</div>
+						</div>
+						{% endfor %}
+
+						<!-- Destination -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="destinations" id="destinations2">
+		<div class="container">
+			<div class="row">
+				<div class="text-center col">
+					<div class="section_title"><h2>National News</h2></div>
+				</div>
+			</div>
+			<div class="row destinations_row">
+				<div class="col">
+					<div class="destinations_container item_grid">
+
+						<!-- Destination -->
+						{% for obj in objects1 %}
+						<div class="destination item">
+							<a href="{{obj.link}}">
+							<div class="destination_image">
+								<img src="{{ MEDIA_URL }}{{ obj.image.url }}" alt="Image">
+							</div>
+							<div class="destination_content">
+								<div class="destination_title">{{obj.name}}</a></div>
+								<div class="destination_subtitle"><p>{{obj.desc}}</p></div>
+							</div>
+						</div>
+						{% endfor %}
+
+						<!-- Destination -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="destinations" id="destinations">
+		<div class="container">
+			<div class="row">
+				<div class="text-center col">
+					<div class="section_title"><h2>International News</h2></div>
+				</div>
+			</div>
+			<div class="row destinations_row">
+				<div class="col">
+					<div class="destinations_container item_grid">
+
+						<!-- Destination -->
+						{% for obj in objects2 %}
+						<div class="destination item">
+							<a href="{{obj.link}}">
+							<div class="destination_image">
+								<img src="{{ MEDIA_URL }}{{ obj.image.url }}" alt="Image">
+							</div>
+							<div class="destination_content">
+								<div class="destination_title">{{obj.name}}</a></div>
 								<div class="destination_subtitle"><p>{{obj.desc}}</p></div>
 							</div>
 						</div>
@@ -164,7 +244,7 @@
 	<!-- Footer -->
 
 	<footer class="footer">
-		<div class="parallax_background parallax-window" data-parallax="scroll" data-image-src="{% static 'images/footer_1.jpg' %}" data-speed="0.8"></div>
+		<div class="parallax_background parallax-window" data-parallax="scroll" data-image-src="{% static 'images/foot1.jpg' %}" data-speed="0.8"></div>
 		<div class="container">
 			<div class="row">
 				<div class="col">
@@ -220,7 +300,7 @@
 									<ul>
 										<li>youremail@gmail.com</li>
 										<li>Office@yourbusinessname.com</li>
-									</ul>
+										</ul>
 								</div>
 							</div>
 						</div>

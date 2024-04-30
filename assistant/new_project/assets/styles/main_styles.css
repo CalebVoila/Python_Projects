@@ -1365,7 +1365,7 @@ section
 
 
 .mic-button {
-background-color:blue;
+background-color:red;
     position: fixed;
     bottom: 120px;
     right: 20px;
@@ -1373,7 +1373,7 @@ background-color:blue;
 }
 
 #micBtn {
-    background-color:blue;
+    background-color:red;
     color: #fff;
     padding: 25px 25px;
     border: none;
@@ -1383,5 +1383,6 @@ background-color:blue;
 }
 
 #mic-btn:hover {
-    background-color: #0056b3;
+    background-color: #0056d3;
 }
+
